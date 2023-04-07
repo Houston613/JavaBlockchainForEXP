@@ -13,15 +13,14 @@ public class Block {
     private String data;
     private long nonce;
 
-    public Block(long index, String prevHash, String hash, String data, long nonce) {
+    public Block(long index, String prevHash, String data, long nonce) {
         this.index = index;
         this.prevHash = prevHash;
-        this.hash = hash;
         this.data = data;
         this.nonce = nonce;
     }
 
-    private String getCurrentState() {
+    public String getCurrentState() {
 
         return getIndex() + getPrevHash() + getData() + getNonce();
 
