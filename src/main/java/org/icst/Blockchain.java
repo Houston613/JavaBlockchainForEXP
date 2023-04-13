@@ -1,0 +1,74 @@
+package org.icst;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class Blockchain implements Serializable {
+
+
+    GenesisBlockData genesisBlockData = GenesisBlockData.INSTANCE;
+
+    private final List<Block> blocks;
+
+
+    public Blockchain(List<Block> chain, Integer port) {
+        if (chain.isEmpty()) {
+            chain.add(genesisBlockGeneration());
+            this.blocks = chain;
+        } else {
+            this.blocks = new ArrayList<>();
+        }
+    }
+
+
+
+
+    protected Block genesisBlockGeneration() {
+        return new Block(genesisBlockData.getIndex(), genesisBlockData.getPreviousHash(),
+                genesisBlockData.getData(), genesisBlockData.getHash(), genesisBlockData.getNonce());
+    }
+
+    protected Block blockMining(Block block) {
+        while (!hashCheck(block)) {
+            block.setNonce(block.getNonce() + 1);
+            block.setHash(block.hashCalculate());
+        }
+        return block;
+        //return createNewBlock(block, seed);
+    }
+
+    protected boolean hashCheck(Block block) {
+        return block.getHash().endsWith("0000");
+    }
+
+    protected Block createNewBlock(Block block, long seed) {
+        Block newBlock = new Block(block.getIndex() + 1, block.getHash(), dataGenerator(seed), 0);
+        newBlock.setHash(newBlock.hashCalculate());
+        return newBlock;
+    }
+
+    private String dataGenerator(long seed) {
+        int leftLimit = 97;
+        int rightLimit = 122;
+        int targetStringLength = 256;
+
+        Random random = new Random();
+        random.setSeed(seed);
+        return random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+
+    public List<Block> getBlocks() {
+        return blocks;
+    }
+
+    public Block getBlock() {
+        return getBlocks().get(getBlocks().size() - 1);
+    }
+
+}

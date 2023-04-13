@@ -35,5 +35,4 @@ class BlockTest {
         String expectedHash = "1bab61677c31715b9b9415a8f2016402f07202f4de8e3d91e3bc4d4528ba1fc2";
         assertEquals(block.hashCalculate(),expectedHash);
     }
-
 }
