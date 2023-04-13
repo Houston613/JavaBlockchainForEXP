@@ -12,6 +12,8 @@ public class Blockchain implements Serializable {
 
     private final List<Block> blocks;
 
+    private final MiningStrategy miningStrategy;
+
 
     public Blockchain(List<Block> chain, Integer port) {
         if (chain.isEmpty()) {
@@ -20,9 +22,16 @@ public class Blockchain implements Serializable {
         } else {
             this.blocks = new ArrayList<>();
         }
+        this.miningStrategy = chooseMeaningStrategy(port);
     }
 
-
+    private MiningStrategy chooseMeaningStrategy(Integer port) {
+        if (port == 8080)
+            return new IncrementStrategy();
+        else if (port == 8081)
+            return new RandomStrategy();
+        else return new FibonacciStrategy();
+    }
 
 
     protected Block genesisBlockGeneration() {
@@ -32,7 +41,7 @@ public class Blockchain implements Serializable {
 
     protected Block blockMining(Block block) {
         while (!hashCheck(block)) {
-            block.setNonce(block.getNonce() + 1);
+            block.setNonce(block.getNonce() + miningStrategy.nextNonce(block.getNonce()));
             block.setHash(block.hashCalculate());
         }
         return block;
