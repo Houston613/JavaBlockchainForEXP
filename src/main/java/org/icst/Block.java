@@ -1,11 +1,12 @@
 package org.icst;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Block {
+public class Block implements Serializable {
 
     private long index;
     private String prevHash;
@@ -17,6 +18,14 @@ public class Block {
         this.index = index;
         this.prevHash = prevHash;
         this.data = data;
+        this.nonce = nonce;
+    }
+
+    public Block(long index, String prevHash, String data, String hash, long nonce) {
+        this.index = index;
+        this.prevHash = prevHash;
+        this.data = data;
+        this.hash = hash;
         this.nonce = nonce;
     }
 
