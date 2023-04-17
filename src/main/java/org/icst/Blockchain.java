@@ -12,6 +12,10 @@ public class Blockchain implements Serializable {
 
     private final List<Block> blocks;
 
+    public MiningStrategy getMiningStrategy() {
+        return miningStrategy;
+    }
+
     private final MiningStrategy miningStrategy;
 
 
@@ -45,7 +49,6 @@ public class Blockchain implements Serializable {
             block.setHash(block.hashCalculate());
         }
         return block;
-        //return createNewBlock(block, seed);
     }
 
     protected boolean hashCheck(Block block) {
@@ -53,6 +56,7 @@ public class Blockchain implements Serializable {
     }
 
     protected Block createNewBlock(Block block, long seed) {
+
         Block newBlock = new Block(block.getIndex() + 1, block.getHash(), dataGenerator(seed), 0);
         newBlock.setHash(newBlock.hashCalculate());
         return newBlock;
@@ -76,7 +80,16 @@ public class Blockchain implements Serializable {
         return blocks;
     }
 
-    public Block getBlock() {
+    public void addLastBlock(Block block){
+        blocks.add(block);
+    }
+
+    public void replaceLastBlock(Block block){
+        getBlocks().remove(getBlocks().size() - 1);
+        addLastBlock(block);
+    }
+
+    public Block getLatestBlock() {
         return getBlocks().get(getBlocks().size() - 1);
     }
 
