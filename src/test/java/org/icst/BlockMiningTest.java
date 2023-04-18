@@ -22,6 +22,19 @@ class BlockMiningTest {
         Block block = blockchain.genesisBlockGeneration();
         assertFalse(blockchain.hashCheck(block));
     }
+    @Test
+    void nonceTest() {
+        Blockchain blockchain = new Blockchain(new ArrayList<>(), 8080);
+        Block block = blockchain.genesisBlockGeneration();
+        System.out.println(block.getNonce());
+        MiningStrategy miningStrategy = new IncrementStrategy();
+        block.setNonce(block.getNonce() + miningStrategy.nextNonce(block.getNonce()));
+        System.out.println(block.getNonce());
+        block.setNonce(block.getNonce() + miningStrategy.nextNonce(block.getNonce()));
+        System.out.println(block.getNonce());
+        assertEquals(2,block.getNonce());
+
+    }
 
     @Test
     void mineTest() {
