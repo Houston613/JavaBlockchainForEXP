@@ -3,15 +3,16 @@ package org.icst;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Block implements Serializable {
 
-    private long index;
-    private String prevHash;
+    private final long index;
+    private final String prevHash;
     private String hash;
-    private String data;
+    private final String data;
     private long nonce;
 
     public Block(long index, String prevHash, String data, long nonce) {
@@ -20,6 +21,7 @@ public class Block implements Serializable {
         this.data = data;
         this.nonce = nonce;
     }
+
 
     public Block(long index, String prevHash, String data, String hash, long nonce) {
         this.index = index;
@@ -56,17 +58,10 @@ public class Block implements Serializable {
         return index;
     }
 
-    public void setIndex(long index) {
-        this.index = index;
-    }
-
     public String getPrevHash() {
         return prevHash;
     }
 
-    public void setPrevHash(String prevHash) {
-        this.prevHash = prevHash;
-    }
 
     public String getHash() {
         return hash;
@@ -80,9 +75,6 @@ public class Block implements Serializable {
         return data;
     }
 
-    public void setData(String data) {
-        this.data = data;
-    }
 
     public long getNonce() {
         return nonce;
@@ -90,5 +82,18 @@ public class Block implements Serializable {
 
     public void setNonce(long nonce) {
         this.nonce = nonce;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Block block = (Block) o;
+        return index == block.index && nonce == block.nonce && Objects.equals(prevHash, block.prevHash) && Objects.equals(hash, block.hash) && Objects.equals(data, block.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index, prevHash, hash, data, nonce);
     }
 }
