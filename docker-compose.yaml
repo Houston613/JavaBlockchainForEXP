@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  node1:
+    image: image-for-blockchain:1.0
+    container_name: node1
+    network_mode: host
+    command: "8080"
+
+  node2:
+    image: image-for-blockchain:1.0
+    container_name: node2
+    network_mode: host
+    command: "8081"
+
+  node3:
+    image: image-for-blockchain:1.0
+    container_name: node3
+    network_mode: host
+    command: "8082"
