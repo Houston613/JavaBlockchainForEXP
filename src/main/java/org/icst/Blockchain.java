@@ -55,20 +55,19 @@ public class Blockchain implements Serializable {
         return block.getHash().endsWith("0000");
     }
 
-    protected Block createNewBlock(Block block, long seed) {
+    protected Block createNewBlock(Block block) {
 
-        Block newBlock = new Block(block.getIndex() + 1, block.getHash(), dataGenerator(seed), 0);
+        Block newBlock = new Block(block.getIndex() + 1, block.getHash(), dataGenerator(), 0);
         newBlock.setHash(newBlock.hashCalculate());
         return newBlock;
     }
 
-    private String dataGenerator(long seed) {
+    private String dataGenerator() {
         int leftLimit = 97;
         int rightLimit = 122;
         int targetStringLength = 256;
 
         Random random = new Random();
-        random.setSeed(seed);
         return random.ints(leftLimit, rightLimit + 1)
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
