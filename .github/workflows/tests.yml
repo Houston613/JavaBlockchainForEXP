@@ -4,7 +4,6 @@ on:
     branches: [ "master", "develop" ]
   pull_request:
     branches: [ "master", "develop" ]
-  workflow_dispatch:
 
 jobs:
   gradle:
@@ -21,7 +20,7 @@ jobs:
           java-version: 17
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: /gradlew build
         
       - name: Run Tests with Gradle
-        run: ./gradlew test
+        run: /gradlew test
