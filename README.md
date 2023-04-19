@@ -1,5 +1,9 @@
 # JavaBlockchainForEXP
 
+
+[![tests](https://github.com/Houston613/JavaBlockchainForEXP/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/Houston613/JavaBlockchainForEXP/actions/workflows/tests.yml)
+
+
 ```
 git clone https://github.com/Houston613/JavaBlockchainForEXP.git
 ```
