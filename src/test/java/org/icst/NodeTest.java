@@ -28,14 +28,14 @@ public class NodeTest {
 
     @Test
     void nodeIntegrationTest() {
-        Node firstNode = new Node("localhost",8080,8080);
+        Node firstNode = new Node("localhost",8000,8000);
         firstNode.start();
 
-        Node secondNode = new Node("localhost",8081,8080);
+        Node secondNode = new Node("localhost",8001,8000);
         secondNode.start();
         secondNode.broadcastPort();
 
-        Node thirdNode = new Node("localhost",8082,8080);;
+        Node thirdNode = new Node("localhost",8002,8000);;
         thirdNode.start();
         thirdNode.broadcastPort();
         try {

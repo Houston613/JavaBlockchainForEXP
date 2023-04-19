@@ -97,6 +97,7 @@ public class Node implements Serializable {
                     System.out.println("stopped mining PROCESS port " +
                             getPort() + "\n" +
                             "---------------------------------------");
+                    miningExecutor.shutdownNow();
                     break;
                 } else {
                     System.out.println("Port " + getPort() + " mined block with index " + block.getIndex() + "\n" +
@@ -112,13 +113,14 @@ public class Node implements Serializable {
                         break;
                     } else {
 
-                        Block newBlock = blockchain.createNewBlock(block, 1);
+                        Block newBlock = blockchain.createNewBlock(block);
                         Block forMessageBlock = new Block(block.getIndex(),
                                 block.getPrevHash(), block.getData(), block.getHash(), block.getNonce());
                         message = new Message(MessageType.SEND_BLOCKCHAIN);
                         message.setPort(getPort());
                         message.setBlock(forMessageBlock);
 
+                        blockchain.addLastBlock(newBlock);
                         for (int i = 0; i <= peers.size() - 1; i++) {
                             Integer currentPeer = peers.get(i);
                             if (peers.get(i) != getPort()) {
@@ -126,9 +128,11 @@ public class Node implements Serializable {
                                         messageBroadcast(currentPeer, getPort(), message));
                             }
                         }
-                        blockchain.addLastBlock(newBlock);
+
                         System.out.println("Broadcast New block and add it to Blockchain list with size " + blockchain.getBlocks().size() + "\n" +
                                 "---------------------------------------");
+                        if (blockchain.getBlocks().size() - 1 > blockchain.getLatestBlock().getIndex() + 1)
+                            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                         latestBlock = blockchain.getLatestBlock();
                     }
                 }
@@ -140,7 +144,11 @@ public class Node implements Serializable {
         System.out.println("restarting thread in port " +
                 getPort() + "\n" +
                 "---------------------------------------");
-
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         miningExecutor.execute(runnable);
     }
 
@@ -172,18 +180,29 @@ public class Node implements Serializable {
 
                 case SEND_BLOCKCHAIN -> {
                     System.out.println("In " + port + " block received");
-                    System.out.println(message.getBlock().getIndex() + 1);
-                    System.out.println(blockchain.getLatestBlock().getIndex());
 
+                    List<Block> blocks = blockchain.getBlocks();
                     if (message.getBlock().getIndex() + 1 == blockchain.getLatestBlock().getIndex()) {
                         System.out.println("Check POW");
                         System.out.println(message.getBlock().getNonce());
                         System.out.println(blockchain.getBlocks().get(blockchain.getBlocks().size() - 2).getNonce());
                         if (message.getBlock().getNonce() > blockchain.getBlocks().get(blockchain.getBlocks().size() - 2).getNonce()) {
                             System.out.println("POW in received block is better, need to recreate");
+                            miningExecutor.shutdownNow();
+                            System.out.println("Trying to interrupt " + getPort() + "  " + miningExecutor.isShutdown() + "\n" +
+                                    "---------------------------------------");
                             blockchain.getBlocks().remove(blockchain.getBlocks().size() - 1);
                             blockchain.replaceLastBlock(message.getBlock());
-
+                            Block newBlock = blockchain.createNewBlock(message.getBlock());
+                            blockchain.addLastBlock(newBlock);
+                            System.out.println("Received block has index " + message.getBlock().getIndex() + "\n" +
+                                    "Created new block with index " + newBlock.getIndex() + "\n" +
+                                    "adding block to list in port " + getPort() + "\n" +
+                                    "now blockchain size is " + blockchain.getBlocks().size() + "\n" +
+                                    "---------------------------------------");
+                            if (blockchain.getBlocks().size() - 1 > blockchain.getLatestBlock().getIndex() + 1)
+                                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                            latestBlock = blockchain.getLatestBlock();
                             for (int i = 0; i <= peers.size() - 1; i++) {
                                 Integer currentPeer = peers.get(i);
                                 if ((peers.get(i) != getPort()) && (!Objects.equals(peers.get(i), message.getPort()))) {
@@ -191,18 +210,8 @@ public class Node implements Serializable {
                                             messageBroadcast(currentPeer, getPort(), message));
                                 }
                             }
-                            Block newBlock = blockchain.createNewBlock(message.getBlock(), message.getBlock().getNonce());
-                            blockchain.addLastBlock(newBlock);
-                            System.out.println("Received block has index " + message.getBlock().getIndex() + "\n" +
-                                    "Created new block with index " + newBlock.getIndex() + "\n" +
-                                    "adding block to list in port " + getPort() + "\n" +
-                                    "now blockchain size is " + blockchain.getBlocks().size() + "\n" +
-                                    "---------------------------------------");
-                            latestBlock = blockchain.getLatestBlock();
                             in.close();
-                            miningExecutor.shutdownNow();
-                            System.out.println("Trying to interrupt " + getPort() + "  " + miningExecutor.isShutdown() + "\n" +
-                                    "---------------------------------------");
+
 
                             startMiningExec();
                         } else {
@@ -211,8 +220,11 @@ public class Node implements Serializable {
                         }
                     } else {
                         blockchain.replaceLastBlock(message.getBlock());
-                        Block newBlock = blockchain.createNewBlock(message.getBlock(), message.getBlock().getNonce());
+                        Block newBlock = blockchain.createNewBlock(message.getBlock());
                         blockchain.addLastBlock(newBlock);
+                        miningExecutor.shutdownNow();
+                        System.out.println("Trying to interrupt " + getPort() + "  " + miningExecutor.isShutdown() + "\n" +
+                                "---------------------------------------");
                         System.out.println("Received block has index " + message.getBlock().getIndex() + "\n" +
                                 "Created new block with index " + newBlock.getIndex() + "\n" +
                                 "adding block to list in port " + getPort() + "\n" +
@@ -220,10 +232,6 @@ public class Node implements Serializable {
                                 "---------------------------------------");
                         latestBlock = blockchain.getLatestBlock();
                         in.close();
-                        miningExecutor.shutdownNow();
-                        System.out.println("Trying to interrupt " + getPort() + "  " + miningExecutor.isShutdown() + "\n" +
-                                "---------------------------------------");
-
                         startMiningExec();
                     }
 
