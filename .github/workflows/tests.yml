@@ -20,7 +20,8 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup and execute Gradle 'test' task
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
+      - name: Build with Gradle
+        run: ./gradlew build
+        
+      - name: Run Tests with Gradle
+        run: ./gradlew test
