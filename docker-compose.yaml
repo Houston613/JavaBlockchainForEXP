@@ -4,17 +4,26 @@ services:
   node1:
     image: image-for-blockchain:1.0
     container_name: node1
-    network_mode: host
+    hostname: node1
+    networks:
+      - blockchain
     command: "8080"
 
   node2:
     image: image-for-blockchain:1.0
     container_name: node2
-    network_mode: host
+    hostname: node2
+    networks:
+      - blockchain
     command: "8081"
 
   node3:
     image: image-for-blockchain:1.0
     container_name: node3
-    network_mode: host
+    hostname: node3
+    networks:
+      - blockchain
     command: "8082"
+
+networks:
+  blockchain:
