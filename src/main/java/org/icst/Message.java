@@ -10,6 +10,16 @@ public class Message implements Serializable {
     private Blockchain blockchain;
 
     private List<Integer> peers;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    private String address;
     private Integer port;
 
 
@@ -24,14 +34,6 @@ public class Message implements Serializable {
         return type;
     }
 
-
-    public void setBlockchain(Blockchain blockchain) {
-        this.blockchain = blockchain;
-    }
-
-    public void setPeers(List<Integer> peers) {
-        this.peers = peers;
-    }
 
     public void setBlock(Block block) {
         this.block = block;
